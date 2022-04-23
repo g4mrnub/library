@@ -1,0 +1,22 @@
+.bookDisplay{
+    background-color: coral;
+    max-width: 10em;
+}
+
+.bookForm{
+    background-color: lightcyan;
+    
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    
+    margin: auto;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 8em;
+    height: 14em;
+
+}

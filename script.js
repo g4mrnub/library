@@ -1,18 +1,19 @@
 let myLibrary = [
-    {
-    title:"New IP",
-    author:"Authorson",
-    pages:2
-    },
-    {
-    title:"Sequel 2",
-    author:"Hack",
-    pages:3
-    }
   ];
 
 const libraryContainer = document.querySelector('#library');
 const overlayContainer = document.querySelector('body');
+
+function BookOverlord(){
+}
+
+BookOverlord.prototype.readStatusToggle = function(){
+  if (!this.read) {
+    this.read = true;
+  }else{
+    this.read = false;
+  }
+}
 
 function Book(title, author, pages) {
   // the constructor...
@@ -22,22 +23,7 @@ function Book(title, author, pages) {
   let read = false;
 }
 
-Book.prototype.readStatusToggle = function(){
-  /*let removalIndex = null;
-  for(let i = 0; i<library.length;i++){
-    if(library[i].title == book.title){
-      if(library[i].read = true){library[i].read = false}
-      else{library[i].read = true}; 
-    };
-  };*/
-
-  if (!this.read) {
-    this.read = true;
-    console.log("I AM FUCKING READ");
-  }else{
-    this.read = false;
-  }
-}
+Book.prototype = Object.create(BookOverlord.prototype);
 
 function addBookToLibrary(formData){
   
@@ -61,6 +47,22 @@ let removeBookfromLibrary = function(library, book){ //loops through whole libra
   library.splice(removalIndex,1); //removes that index
   displayLibrary(myLibrary);
 }
+
+/*let findArrayBook = function(library, domBook){ //loops through whole library array
+  let bookIndex = null;
+  for(let i = 0; i<library.length;i++){
+    if(library[i].title == domBook.title){ //domBook NEEDS A DATA KEY INSTEAD BECAUSE p ELEMENTS IN NORMAL DIVS ARE ANONYMOUS WITHOUT IDs
+                                            //so it doesn't even know what "title" property is since it doesn't have a "name" value.
+                                            //I PASSED AN ARRAY OBJECT NOT DOM OBJECT INTO book argument last time because
+                                            //its array index was inside a for loop iteration and not globally scoped.
+                                            //I need to still pass an arrayBook instead then but find it with the data key attribute
+                                            //and use that in the book array index
+      bookIndex = i;
+    }
+  }
+  return library[bookIndex];
+}
+*/
 
 function addBookForm() {
   
@@ -110,11 +112,15 @@ function addBookForm() {
 
 function displayLibrary(library){
   libraryContainer.innerHTML = ""; //clear and refresh content
+  let bookIndex = 0;
   library.forEach(book => {
     const bookDisplay = document.createElement("div");
     bookDisplay.classList.add('bookDisplay');
     const bookContentGrid = document.createElement("div");
     bookContentGrid.classList.add('bookContentGrid');
+
+    bookDisplay.setAttribute('data-id', `${bookIndex}`);
+    bookIndex += 1;
 
     const bookTitleLabel = document.createElement("p");
     bookTitleLabel.classList.add('title');
@@ -140,9 +146,26 @@ function displayLibrary(library){
     if (book.read == true){
       readBox.setAttribute('checked', ""); 
     }
-    readBox.addEventListener('click', () => {
-      /*book.readStatusToggle(); // this function is not a function of book */
-      console.log(book); //OKAY try: creating a whole new child of prototype book that has all the "this." info, the book prototype only having the function of ReadStatusToggle
+    bookDisplay.addEventListener('click', (event) => {
+      if(event.target == readBox){
+        book.readStatusToggle();
+      }
+
+      //OKAY GOT IT.
+      /* ((rn I find array books by matching DOM and object VALUES) this time I assign new 
+        books KEYS and match datakeys to array indices. I display books one at time,)=OPTIONAL ACTUALLY.
+        I delegate the "find array book" to a separate function which returns the book object inside the array, so the "book" can be found
+        in a global context instead of the for loop where scope is lost in callback function.
+        findArrayBook(myLibrary, event.currentTarget).readStatusToggle();
+
+        okay you don't need the findArray function if you just use the datakey from the dom element inside the library array index
+        myLibrary[event.currentTarget.getAttribute('data-id')].readStatusToggle();
+
+        WOW LOL the "readStatusToggle() is not a function" error was from my hardcoded book cards that weren't constructed
+        with the constructor/protype function assignment. The scope of the event listener callback was completely fine...
+        It at least got me to make a real protype chain with correct memory use of the function but the data-id was not needed or 
+        my attempt at the findArrayBook function.
+      */
     });
 
     const removeButton = document.createElement("button");
@@ -152,13 +175,6 @@ function displayLibrary(library){
       removeBookfromLibrary(myLibrary, book);
     });
 
-    /*libraryContainer.appendChild(bookDisplay);
-    bookDisplay.appendChild(bookTitleLabel);
-    bookDisplay.appendChild(bookAuthorLabel);
-    bookDisplay.appendChild(bookPagesLabel);
-    bookDisplay.appendChild(bookRead);
-    bookDisplay.appendChild(readBox);
-    bookDisplay.appendChild(removeButton);*/
     libraryContainer.appendChild(bookDisplay)
     bookDisplay.appendChild(bookContentGrid);
     bookContentGrid.append(

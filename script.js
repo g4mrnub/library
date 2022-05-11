@@ -66,39 +66,49 @@ let removeBookfromLibrary = function(library, book){ //loops through whole libra
 
 function addBookForm() {
   
+  const filter = document.createElement("div");
+  filter.classList.add('filter');
+
   const bookForm = document.createElement("form");
   bookForm.setAttribute("id","bookForm"); 
   bookForm.classList.add('bookForm');
 
   const bookTitleLabel = document.createElement("label");
   bookTitleLabel.setAttribute("for","title"); 
-  bookTitleLabel.textContent = "BOOK TITLE:";
+  bookTitleLabel.textContent = "Book Title:";
   const bookTitleBox = document.createElement("input");
   bookTitleBox.setAttribute('type',"text");
   bookTitleBox.setAttribute('name',"title"); 
+  bookTitleBox.setAttribute("required", "");
 
   const bookAuthorLabel = document.createElement("label");
   bookAuthorLabel.setAttribute('for',"author"); 
-  bookAuthorLabel.textContent = "BOOK Author:";
+  bookAuthorLabel.textContent = "Book Author:";
   const bookAuthorBox = document.createElement("input");
   bookAuthorBox.setAttribute('type',"text"); 
   bookAuthorBox.setAttribute('name',"author"); 
+  bookAuthorBox.setAttribute("required", "")
 
   const bookPagesLabel = document.createElement("label");
   bookPagesLabel.setAttribute('for',"pages"); 
   bookPagesLabel.textContent = "Page Count:";
   const bookPagesBox = document.createElement("input");
-  bookPagesBox.setAttribute('type',"text"); 
+  bookPagesBox.setAttribute('type',"number"); 
   bookPagesBox.setAttribute('name',"pages"); 
+  bookPagesBox.setAttribute("required", "");
 
-  const submit = document.createElement("BUTTON");
-  submit.setAttribute('type',"submit"); 
+  const submit = document.createElement("button");
+  submit.setAttribute('type',"submit");
+  submit.classList.add('addBook'); 
   submit.textContent = "SUBMIT";
-  submit.addEventListener('click', (event) => {
-    addBookToLibrary(event.target.parentNode);
+  bookForm.addEventListener('submit', (event) => {
+    addBookToLibrary(event.currentTarget);
     displayLibrary(myLibrary);
     bookForm.parentNode.removeChild(bookForm);
+    filter.parentNode.removeChild(filter);
   });
+
+  overlayContainer.appendChild(filter);
   overlayContainer.appendChild(bookForm);
   bookForm.append(
     bookTitleLabel, 
